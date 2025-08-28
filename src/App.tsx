@@ -1,43 +1,37 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Play,
   Pause,
-  Square,
   Mic,
   MicOff,
-  Settings,
   Upload,
   Github,
   FileText,
-  TrendingUp,
-  Award,
-  Calendar,
-  Clock,
-  Target,
-  Brain,
-  Zap,
-  Users,
-  ChevronRight,
-  Download,
-  RotateCcw,
-  Lightbulb,
-  BarChart3,
   Video,
-  MessageSquare,
-  Star,
-  AlertCircle,
 } from 'lucide-react';
 
 const AITrainer = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [isRecording, setIsRecording] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isTraining, setIsTraining] = useState(false);
-  const [currentScore, setCurrentScore] = useState(8.1);
-  const [stressLevel, setStressLevel] = useState(65);
+  const [currentScore] = useState(8.1);
+  const [stressLevel] = useState(65);
   const [selectedProject, setSelectedProject] = useState('foodtech');
   const [showAddProject, setShowAddProject] = useState(false);
-  const [projects, setProjects] = useState({
+  
+  interface Project {
+    name: string;
+    readiness: number;
+    files: string[];
+    github: string;
+    lastSession: string;
+    type?: string;
+  }
+  
+  type ProjectsType = {
+    [key: string]: Project;
+  };
+  const [projects, setProjects] = useState<ProjectsType>({
     foodtech: {
       name: 'FoodTech Startup',
       readiness: 67,
@@ -59,7 +53,7 @@ const AITrainer = () => {
     const [projectName, setProjectName] = useState('');
     const [projectType, setProjectType] = useState('startup');
     const [githubRepo, setGithubRepo] = useState('');
-    const [files, setFiles] = useState([]);
+    const [files, setFiles] = useState<string[]>([]);
     const [step, setStep] = useState(1);
 
     const handleAddProject = () => {
@@ -174,10 +168,12 @@ const AITrainer = () => {
                     multiple
                     accept=".pptx,.pdf,.docx,.txt"
                     onChange={(e) => {
-                      const fileNames = Array.from(e.target.files).map(
-                        (f) => f.name
-                      );
-                      setFiles(fileNames);
+                      if (e.target.files) {
+                        const fileNames = Array.from(e.target.files).map(
+                          (f) => f.name
+                        );
+                        setFiles(fileNames);
+                      }
                     }}
                     className="hidden"
                     id="file-upload"
@@ -245,7 +241,7 @@ const AITrainer = () => {
 
   // Dashboard Component
   const Dashboard = () => (
-    <div className="flex h-full">
+    <div className="flex min-h-screen">
       {/* Left Panel - Projects */}
       <div className="w-80 bg-slate-50 p-6 border-r">
         <div className="flex items-center justify-between mb-6">
@@ -311,7 +307,7 @@ const AITrainer = () => {
 
       {/* Center Panel - Training Zone */}
       <div className="flex-1 p-8">
-        <div className="bg-white rounded-xl shadow-lg p-8 h-full">
+        <div className="bg-white rounded-xl shadow-lg p-8 min-h-full">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
               🎯 Готовы к тренировке "{projects[selectedProject].name}"?
@@ -388,7 +384,7 @@ const AITrainer = () => {
               <div key={skill} className="mb-4">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium text-gray-700">
-                    {skillNames[skill].icon} {skillNames[skill].name}
+                    {skillNames[skill as keyof typeof skillNames].icon} {skillNames[skill as keyof typeof skillNames].name}
                   </span>
                   <span className="text-sm text-gray-500">{value}%</span>
                 </div>
@@ -480,16 +476,16 @@ const AITrainer = () => {
 
   // Training Component
   const Training = () => {
-    const [sessionTime, setSessionTime] = useState('08:23');
-    const [aiMessage, setAiMessage] = useState(
+    const [sessionTime] = useState('08:23');
+    const [aiMessage] = useState(
       'Интересная идея! А как вы решили проблему с cold storage для продуктов?'
     );
-    const [contextInfo, setContextInfo] = useState(
+    const [contextInfo] = useState(
       "Слайд 5: 'Техническое решение'"
     );
 
     return (
-      <div className="h-full bg-gray-900 text-white">
+      <div className="min-h-screen bg-gray-900 text-white">
         {/* Header */}
         <div className="bg-gray-800 p-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -507,7 +503,7 @@ const AITrainer = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex h-full">
+        <div className="flex min-h-[calc(100vh-4rem)]">
           {/* Video Chat Area */}
           <div className="flex-1 p-6">
             {/* AI Mentor Video */}
@@ -660,7 +656,7 @@ const AITrainer = () => {
 
   // Analysis Component
   const Analysis = () => (
-    <div className="p-8 h-full bg-gray-50">
+    <div className="p-8 min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -881,7 +877,7 @@ const AITrainer = () => {
 
   // Settings Component
   const Settings = () => (
-    <div className="p-8 h-full bg-gray-50">
+    <div className="p-8 min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">
           ⚙️ Настройки тренажера
@@ -1166,9 +1162,9 @@ const AITrainer = () => {
 
   // Main App
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       <Navigation />
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-auto">
         {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'training' && <Training />}
         {activeTab === 'analysis' && <Analysis />}
